@@ -5,8 +5,17 @@ const useForm = (formObj) => {
 
   const renderFormInputs = () => {
     return Object.values(form).map((inputObj) => {
-      const { renderInput, label, value, errorMessage, valid } = inputObj;
-      return renderInput(onInputChange, label, value, errorMessage, valid);
+      const { renderInput, label, value, errorMessage, valid, touched } =
+        inputObj;
+      return renderInput(
+        onInputChange,
+        onInputBlur,
+        label,
+        value,
+        errorMessage,
+        valid,
+        touched
+      );
     });
   };
 
@@ -23,20 +32,33 @@ const useForm = (formObj) => {
     [form]
   );
 
+  const onInputBlur = useCallback(
+    (e) => {
+      const { name } = e.target;
+      const inputObj = { ...form[name] };
+
+      // update blur status
+      inputObj.touched = true;
+      // check validation rules
+      inputObj.valid = isInputFieldValid(inputObj);
+
+      setForm((prevForm) => {
+        return { ...prevForm, [name]: inputObj };
+      });
+    },
+    [form, isInputFieldValid]
+  );
+
   const onInputChange = useCallback(
     (event) => {
-      console.log("Change running");
-
       const { name, value } = event.target;
       const inputObj = { ...form[name] };
+
+      // update value
       inputObj.value = value;
-      const isValidInput = isInputFieldValid(inputObj);
-      if (isValidInput && !inputObj.valid) {
-        inputObj.valid = true;
-      } else if (!isValidInput && inputObj.valid) {
-        inputObj.valid = false;
-      }
-      inputObj.touched = true;
+      // check validation rules
+      inputObj.valid = isInputFieldValid(inputObj);
+
       setForm((prevForm) => {
         return { ...prevForm, [name]: inputObj };
       });

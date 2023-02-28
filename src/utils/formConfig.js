@@ -9,7 +9,15 @@ import {
 
 const createFormFieldsConfig = (label, name, type, defaultValue = "") => {
   return {
-    renderInput: (handleChange, key, value, error, isValid) => {
+    renderInput: (
+      handleChange,
+      handleBlur,
+      key,
+      value,
+      error,
+      isValid,
+      isTouched
+    ) => {
       return (
         <Input
           key={key}
@@ -19,6 +27,8 @@ const createFormFieldsConfig = (label, name, type, defaultValue = "") => {
           value={value}
           handleChange={handleChange}
           isValid={isValid}
+          handleBlur={handleBlur}
+          isTouched={isTouched}
           errorMessage={error}
         />
       );
